@@ -32,6 +32,9 @@ class Urteil:
         self.publisher = dic["publisher"]
         self.accessRights = dic["accessRights"]
 
+
+
+
 urteilListe = []
 
 for filename in os.listdir("StR"):
