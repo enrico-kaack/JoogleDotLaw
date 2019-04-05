@@ -11,7 +11,11 @@ class Urteil:
         self.entschDatum = dic["entsch-datum"]
         self.aktenzeichen = dic["aktenzeichen"]
         self.doktyp = dic["doktyp"]
-        self.norm = dic["norm"]
+
+        self.norm = []
+        norm = dic["norm"].split(",")
+        for n in norm:
+            self.norm.append(n.strip())
         self.vorinstanz = dic["vorinstanz"]
         self.regionAbk = dic["region"]["abk"]
         self.regionLong = dic["region"]["long"]
@@ -39,7 +43,7 @@ class Norm:
         self.text = text
 
     def isTextInNorm(self, searchText):
-        pass
+        pass #TODO should we do this???
 
 
 urteilListe = []
@@ -72,6 +76,9 @@ def setup():
 
 if __name__ == "__main__":
     setup()
+
+    for u in urteilListe:
+        print(u.norm)
 
 
 
