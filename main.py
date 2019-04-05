@@ -32,13 +32,43 @@ class Urteil:
         self.publisher = dic["publisher"]
         self.accessRights = dic["accessRights"]
 
-
+class Norm:
+    def __init__(self, paragraph, title, text):
+        self.paragraph = paragraph
+        self.title = title
+        self.text = text
 
 
 urteilListe = []
+bgb = []
+stgb = []
 
-for filename in os.listdir("StR"):
-    with open(os.path.join("StR",filename)) as json_file:
-        d = json.load(json_file)
-        u = Urteil(d)
-        urteilListe.append(u)
+def setup():
+    # read all urteile
+    for filename in os.listdir("StR"):
+        with open(os.path.join("StR/",filename)) as json_file:
+            d = json.load(json_file)
+            u = Urteil(d)
+            urteilListe.append(u)
+
+    # read norms for bgb
+    with open("bgb.json") as bgb_file:
+        d = json.load(bgb_file)
+        for norm in d["normen"]:
+            if "sentencedtext" in norm and "artara" in norm:
+                n = Norm(d["artpara"], d["title"], d["sentencedtext"])
+                bgb.append(norm)
+    
+    # read norms for stgb
+    with open("stgb.json") as stgb_file:
+        d = json.load(stgb_file)
+        for norm in d["normen"]:
+            if "sentencedtext" in norm and "artara" in norm:
+                n = Norm(d["artpara"], d["title"], d["sentencedtext"])
+                stgb.append(norm)
+
+if __name__ == "__main__":
+    setup()
+
+
+
