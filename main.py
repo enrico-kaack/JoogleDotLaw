@@ -38,6 +38,9 @@ class Norm:
         self.title = title
         self.text = text
 
+    def isTextInNorm(self, searchText):
+        pass
+
 
 urteilListe = []
 bgb = []
