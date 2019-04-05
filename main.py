@@ -1,4 +1,5 @@
 import json
+import os
 
 class Urteil:
     def __init__(self, dic):
@@ -19,8 +20,10 @@ class Urteil:
         self.leitsatz = dic["leitsatz"]
         self.tenor = dic["tenor"]
         self.tatbestand = dic["tatbestand"]
-        self.entscheidungsgruende = dic["entscheidungsgruende"]
-        self.gruende = dic["gruende"]
+        if (len(dic["entscheidungsgruende"]) > 0):
+            self.gruende = dic["entscheidungsgruende"]
+        else:
+            self.gruende = dic["gruende"]
         self.abweichendeMeinung = dic["abwmeinung"]
         self.sonstlt = dic["sonstlt"]
         self.identifier = dic["identifier"]
@@ -29,11 +32,10 @@ class Urteil:
         self.publisher = dic["publisher"]
         self.accessRights = dic["accessRights"]
 
-    
+urteilListe = []
 
-with open("Str/JURE100055074.json") as json_file:
-    d = json.load(json_file)
-    u = Urteil(d)
-    print(u)
-
-
+for filename in os.listdir("StR"):
+    with open(os.path.join("StR/",filename)) as json_file:
+        d = json.load(json_file)
+        u = Urteil(d)
+        urteilListe.append(u)
