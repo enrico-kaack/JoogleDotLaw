@@ -38,7 +38,7 @@ class Urteil:
 urteilListe = []
 
 for filename in os.listdir("StR"):
-    with open(os.path.join("StR/",filename)) as json_file:
+    with open(os.path.join("StR",filename)) as json_file:
         d = json.load(json_file)
         u = Urteil(d)
         urteilListe.append(u)
