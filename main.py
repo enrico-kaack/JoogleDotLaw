@@ -4,7 +4,7 @@ import inspect
 import re
 from bs4 import BeautifulSoup
 from preprocess import run_complete_pipeline
-#from funktion import einzelwortsuche, ranking
+from Rankingalgorithmus import Rankingnummer
 from nltk.stem.snowball import SnowballStemmer
 from flask import Flask
 from collections import defaultdict
@@ -164,14 +164,12 @@ def searchAndSort(searchstring, urteilListe, norm):
                 absatz = Absatz(abs["num"], abs["text"], abs["textProcessed"])
                 if searchstring in absatz.textProcessed:
                     res = dict()
-                #if einzelwortsuche(searchstring, absatz.textProcessed) > 0:
-                    #ranking_res = ranking(absatz)
-                    ranking_res = 1
+                    ranking_res = Rankingnummer(absatz)
                     res["abs"] = absatz.num
                     res["ranking"] = ranking_res
                     res["urteil"] = urteil.__dict__
                     results.append(res) 
-    results = sorted(results, key=lambda x: x["ranking"])
+    results = sorted(results, key=lambda x: x["ranking"], inverse=True)
     return(results)
 
 def getPageranks(urteilListe):
@@ -198,7 +196,6 @@ if __name__ == "__main__":
     
     urteilListe, stgb, bgb, normIndex = setup(reloadUrteile)
     
-    print(getPageranks(urteilListe))
     
     #for u in urteilListe:
         #print(u.norm)
@@ -209,5 +206,6 @@ if __name__ == "__main__":
         def start(searchstring, norm):
             return searchAndSort(searchstring, urteilListe, norm)
     '''
-    #print(searchAndSort("Mittäterschaft", urteilListe, "§ 25 Abs 2 StGB"))
+    with open("result.txt", "w", encoding="utf-8") as outf:
+        outf.write(str(searchAndSort("Mittäterschaft", urteilListe, "§ 25 Abs 2 StGB")))
 
