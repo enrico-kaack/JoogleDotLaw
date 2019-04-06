@@ -16,7 +16,7 @@
         <div>
           <b-card title="Tenor" tag="article">
             <b-card-body>
-              <div v-html="textFormatted"></div>
+              <div v-html="r.urteil.tenor"></div>
             </b-card-body>
           </b-card>
         </div>
@@ -25,7 +25,7 @@
         <div>
           <b-card title="Gründe" tag="article">
             <b-card-body>
-              <div v-html="r.urteil.gruende"></div>
+              <div v-html="textFormatted"></div>
             </b-card-body>
           </b-card>
         </div>
