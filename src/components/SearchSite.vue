@@ -38,19 +38,19 @@
           <b-row>
             <b-col>
               <b-form-group label="Vorschrift">
-                <b-form-input id="input-norm" v-model="norm" v-on:click="loadNormText"></b-form-input>
+                <b-form-input id="input-norm" v-model="search.norm" v-on:keyup.enter="loadNormText"></b-form-input>
               </b-form-group>
             </b-col>
             <b-col>
               <b-form-group label="Suchbegriff">
-                <b-form-input id="input-suchbegriff" v-model="suchbegriff"></b-form-input>
+                <b-form-input id="input-suchbegriff" v-model="search.suchbegriff"></b-form-input>
               </b-form-group>
             </b-col>
           </b-row>
           <b-row>
             <b-col>
               <b-form-group label="Normtext">
-                <b-form-textarea id="input-normtexxt" v-model="normText" rows="3"></b-form-textarea>
+                <b-form-textarea id="input-normtexxt" v-model="search.normText" @select.native="selectedText" rows="3"></b-form-textarea>
               </b-form-group>
             </b-col>
           </b-row>
@@ -61,6 +61,8 @@
 </template>
 
 <script>
+import API from '@/api/backend'
+
 export default {
   name: "SearchSite",
   data() {
@@ -81,8 +83,15 @@ export default {
     };
   },
   methods: {
-    loadNormText: () => {
-      
+    selectedText(event) {
+      var indexStart = event.target.selectionStart;
+      var indexEnd = event.target.selectionEnd;
+      this.$data.search.suchbegriff = event.target.value.substring(indexStart, indexEnd);
+    },
+    loadNormText() {
+        API.getNormText(this.$data.search.norm).then(data => {
+          this.$data.search.normText = data
+        })
     }
   }
 };
