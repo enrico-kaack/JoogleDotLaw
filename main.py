@@ -146,7 +146,7 @@ def setup(reloadUrteile=False):
         for norm in d["normen"]:
             if "sentencedtext" in norm and "artpara" in norm and "title" in norm:
                 n = Norm(norm["artpara"], norm["title"], norm["sentencedtext"])
-                normIndex.append(n.paragraph + " STGB")
+                normIndex.append(n.paragraph + " StGB")
                 stgb.append(n)
                 
     return urteilListe, stgb, bgb, normIndex
