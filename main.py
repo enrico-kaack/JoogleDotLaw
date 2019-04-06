@@ -7,6 +7,7 @@ from preprocess import run_complete_pipeline
 #from funktion import einzelwortsuche, ranking
 from nltk.stem.snowball import SnowballStemmer
 from flask import Flask
+from collections import defaultdict
 
 class Urteil:
     def __init__(self, dic, reload=False):
@@ -166,13 +167,24 @@ def searchAndSort(searchstring, urteilListe, norm):
                     results.append(res) 
     results = sorted(results, key=lambda x: x["ranking"])
     return(results)
-        
+
+def getPageranks(urteilListe):
+        pagerankPattern = "\d StR \d+/\d+"
+        pagerankdict = defaultdict(int)
+        for urteil in urteilListe:
+            references = re.findall(pagerankPattern, urteil.gruende)
+            for ref in references:
+                pagerankdict[ref] += 1
+        return(pagerankdict)
+            
 
 if __name__ == "__main__":
 
     reloadUrteile = True
     
     urteilListe, stgb, bgb = setup(reloadUrteile)
+    
+    print(getPageranks(urteilListe))
     
     #for u in urteilListe:
         #print(u.norm)
