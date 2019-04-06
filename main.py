@@ -169,7 +169,7 @@ def searchAndSort(searchstring, urteilListe, norm):
                     res["ranking"] = ranking_res
                     res["urteil"] = urteil.__dict__
                     results.append(res) 
-    results = sorted(results, key=lambda x: x["ranking"], inverse=True)
+    results = sorted(results, key=lambda x: x["ranking"], reverse=True)
     return(results)
 
 def getPageranks(urteilListe):
