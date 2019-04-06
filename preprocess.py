@@ -15,7 +15,8 @@ def tokenize_strip(text):
     return gensim.utils.simple_preprocess(text)
     
 def remove_html(text):
-    return re.sub("<[^>]+>", "", text)   
+    return re.sub("<[^>]+>", "", text) 
+
         
 def remove_stopwords(tokens):
     return [token for token in tokens if token not in stopwords.words("german")]
