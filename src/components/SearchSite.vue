@@ -32,7 +32,7 @@
         v-bind:key="r.key"
         v-for="r in results"
       >
-      <ListItem v-bind:r="r"></ListItem>
+      <ListItem v-bind:r="r" v-bind:search="search"></ListItem>
       </b-list-group-item>
     </b-list-group>
       </div>
@@ -131,7 +131,6 @@ export default {
     },
 
     loadResults() {
-      console.log("load");
       this.$data.showResults = true;
       API.getResults(
         this.$data.search.suchbegriff,
@@ -140,7 +139,6 @@ export default {
         10
       ).then(data => {
         this.$data.results = data;
-        console.log(data);
       });
     },
 
@@ -148,10 +146,8 @@ export default {
       if (abs < 1 || r.urteil.absaetze[abs] === undefined) {
         return "";
       } else {
-        console.log("absätze",  r.urteil.absaetze[abs],  r.urteil.absaetze[abs].text)
         var worte = r.urteil.absaetze[abs].text.split(" ");
         if (worte.length > 4) { worte = worte.slice(worte.length -4, worte.length)}
-        console.log(worte)
         return worte.join(" ");
       }
     },

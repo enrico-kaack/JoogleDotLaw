@@ -1,10 +1,15 @@
 <template>
   <div>
+    <b-button
+      id="refButton"
+      v-on:click="navToUrteil"
+      variant="light"
+    >{{r.urteil.gertyp}} {{r.urteil.doktyp}} vom {{dateFormatted}} - Az. {{r.urteil.aktenzeichen}}</b-button>
     <div class="resultItem beforeItem afterItem">
       {{ textBefore }}
       <br v-if="textBefore !== ''">
       <br>
-      {{ r.urteil.absaetze[abs].text }}
+      <div v-html="textFormatted"></div>
       <br v-if="textBefore !== ''">
       <br>
       {{ textAfter }}
@@ -13,9 +18,11 @@
 </template>
 
 <script>
+import moment from "moment";
+
 export default {
   name: "ListItem",
-  props: ["r"],
+  props: ["r", "search"],
   data() {
     return {
       msg: "Welcome to Your Vue.js App"
@@ -26,11 +33,16 @@ export default {
       return this.$props.r.abs - 1; //absatz notation starts at 1
     },
 
+    dateFormatted: function() {
+      var date = moment(this.$props.r.urteil.entschDatum);
+      return date.format("DD.MM.YYYY");
+    },
+
     textBefore: function() {
       var abs = this.abs - 1;
-      console.log(abs);
+      console.log(this.$props);
       if (abs < 1 || this.$props.r.urteil.absaetze[abs] === undefined) {
-        return "";
+        return "\n";
       } else {
         console.log(
           "absätze",
@@ -44,6 +56,17 @@ export default {
         console.log(worte);
         return worte.join(" ");
       }
+    },
+
+    textFormatted: function() {
+      var text = this.$props.r.urteil.absaetze[this.$props.r.abs - 1].text;
+      text = text.replace(
+        new RegExp(this.$props.search.suchbegriff, "g"),
+        "<spawn class='marked' style='background-color: rgb(249, 253, 10);'>" +
+          this.$props.search.suchbegriff +
+          "</spawn>"
+      );
+      return text;
     },
 
     textAfter: function() {
@@ -66,6 +89,18 @@ export default {
         console.log(worte);
         return worte.join(" ") + "...";
       }
+    }
+  },
+  methods: {
+    navToUrteil() {
+      this.$router.push({
+        name: "Urteil",
+        params: {
+          az: this.$props.r.urteil.aktenzeichen,
+          r: this.$props.r,
+          search: this.$props.search
+        }
+      });
     }
   }
 };
@@ -133,5 +168,13 @@ export default {
     rgba(255, 255, 255, 1) 100%,
     rgba(255, 255, 255, 0) 0%
   );
+}
+
+#refButton {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1;
+  margin: 5px;
 }
 </style>

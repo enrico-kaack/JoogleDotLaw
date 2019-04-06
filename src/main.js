@@ -7,6 +7,7 @@ import router from './router'
 import BootstrapVue from 'bootstrap-vue'
 import axios from 'axios'
 import VueBootstrapTypeahead from 'vue-bootstrap-typeahead'
+import VueScrollTo from 'vue-scrollto'
 
 axios.defaults.baseURL = 'http://localhost:5000'
 
@@ -18,6 +19,9 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 Vue.component('vue-bootstrap-typeahead', VueBootstrapTypeahead)
 Vue.component('ListItem', ListItem)
+
+Vue.use(VueScrollTo)
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
