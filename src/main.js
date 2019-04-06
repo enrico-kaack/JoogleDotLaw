@@ -2,11 +2,13 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import App from './App'
+import ListItem from './components/ListItem'
 import router from './router'
 import BootstrapVue from 'bootstrap-vue'
 import axios from 'axios'
+import VueBootstrapTypeahead from 'vue-bootstrap-typeahead'
 
-axios.defaults.baseURL = 'http://localhost:8000'
+axios.defaults.baseURL = 'http://localhost:5000'
 
 Vue.config.productionTip = false
 
@@ -14,6 +16,8 @@ Vue.use(BootstrapVue)
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
+Vue.component('vue-bootstrap-typeahead', VueBootstrapTypeahead)
+Vue.component('ListItem', ListItem)
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

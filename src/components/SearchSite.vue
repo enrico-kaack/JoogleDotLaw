@@ -4,53 +4,76 @@
       <b-container id="input-fields">
         <b-row>
           <b-col>
-            <img src="../assets/joogle_law_logo.png" width="100%">
+            <div class="inner">
+              <img src="../assets/joogle_law_logo.png" width="100%">
+            </div>
           </b-col>
           <b-col>
             <b-form-group label="Vorschrift">
-              <b-form-input id="input-norm" v-model="norm"></b-form-input>
+              <b-form-input id="input-norm" v-model="normInput"></b-form-input>
             </b-form-group>
           </b-col>
           <b-col>
             <b-form-group label="Suchbegriff">
-              <b-form-input id="input-suchbegriff" v-model="suchbegriff"></b-form-input>
+              <b-form-input
+                id="input-suchbegriff"
+                v-model="search.suchbegriff"
+                v-on:keyup.enter="loadResults"
+              ></b-form-input>
             </b-form-group>
           </b-col>
-
         </b-row>
       </b-container>
 
       <div id="results" v-if="showResults">
-        <b-list-group>
-          <b-list-group-item
-            class="resultItems"
-            v-bind:key="r.key"
-            v-for="r in results"
-          >{{ r.text }}</b-list-group-item>
-        </b-list-group>
+         <b-list-group>
+      <b-list-group-item
+        class="resultItems"
+        v-bind:key="r.key"
+        v-for="r in results"
+      >
+      <ListItem v-bind:r="r"></ListItem>
+      </b-list-group-item>
+    </b-list-group>
       </div>
     </div>
 
-    <div class="searchSite" v-bind:class="{goingTop: showResults}">
-      <div class="searchBox" v-if="!showResults">
+    <div class="searchSite" v-bind:class="{gone: showResults}">
+      <div class="searchBox">
         <b-container id="input-fields">
           <img src="../assets/joogle_law_logo.png" width="100%">
           <b-row>
             <b-col>
               <b-form-group label="Vorschrift">
-                <b-form-input id="input-norm" v-model="search.norm" v-on:keyup.enter="loadNormText"></b-form-input>
+                <vue-bootstrap-typeahead
+                  id="input-norm"
+                  v-model="normInput"
+                  v-on:keyup.enter="loadNormText"
+                  :data="search.suggestedNorms"
+                  @hit="loadNormText"
+                ></vue-bootstrap-typeahead>
               </b-form-group>
             </b-col>
             <b-col>
               <b-form-group label="Suchbegriff">
-                <b-form-input id="input-suchbegriff" v-model="search.suchbegriff"></b-form-input>
+                <b-form-input
+                  id="input-suchbegriff"
+                  v-model="search.suchbegriff"
+                  v-on:keyup.enter="loadResults"
+                ></b-form-input>
               </b-form-group>
             </b-col>
           </b-row>
           <b-row>
             <b-col>
-              <b-form-group label="Normtext">
-                <b-form-textarea id="input-normtexxt" v-model="search.normText" @select.native="selectedText" rows="3"></b-form-textarea>
+              <b-form-group label="Normtext" v-on:keyup.enter="loadResults">
+                <b-form-textarea
+                  id="input-normtexxt"
+                  v-model="search.normText"
+                  @select.native="selectedText"
+                  disabled
+                  rows="3"
+                ></b-form-textarea>
               </b-form-group>
             </b-col>
           </b-row>
@@ -61,16 +84,17 @@
 </template>
 
 <script>
-import API from '@/api/backend'
+import API from "@/api/backend";
+import _ from "underscore";
 
 export default {
   name: "SearchSite",
   data() {
     return {
       showResults: false,
+      normInput: "",
       search: {
-        norm: "",
-        normText: "",
+        suggestedNorms: [],
         suchbegriff: ""
       },
       results: [
@@ -86,13 +110,59 @@ export default {
     selectedText(event) {
       var indexStart = event.target.selectionStart;
       var indexEnd = event.target.selectionEnd;
-      this.$data.search.suchbegriff = event.target.value.substring(indexStart, indexEnd);
+      this.$data.search.suchbegriff = event.target.value.substring(
+        indexStart,
+        indexEnd
+      );
     },
     loadNormText() {
-        API.getNormText(this.$data.search.norm).then(data => {
-          this.$data.search.normText = data
-        })
+      API.getNormText(this.$data.normInput).then(data => {
+        var text = "";
+        data.norm.text.forEach(t => {
+          text += t + "\n";
+        });
+        this.$data.search.normText = text;
+      });
+    },
+    getNormSuggestion() {
+      API.getNormSuggestion(this.$data.normInput).then(data => {
+        this.$data.search.suggestedNorms = data;
+      });
+    },
+
+    loadResults() {
+      console.log("load");
+      this.$data.showResults = true;
+      API.getResults(
+        this.$data.search.suchbegriff,
+        this.$data.normInput,
+        0,
+        10
+      ).then(data => {
+        this.$data.results = data;
+        console.log(data);
+      });
+    },
+
+    getLastFewWords(r, abs) {
+      if (abs < 1 || r.urteil.absaetze[abs] === undefined) {
+        return "";
+      } else {
+        console.log("absätze",  r.urteil.absaetze[abs],  r.urteil.absaetze[abs].text)
+        var worte = r.urteil.absaetze[abs].text.split(" ");
+        if (worte.length > 4) { worte = worte.slice(worte.length -4, worte.length)}
+        console.log(worte)
+        return worte.join(" ");
+      }
+    },
+    getFirstFewWords(r, abs) {
+      return "";
     }
+  },
+  watch: {
+    normInput: _.debounce(function(normInput) {
+      this.getNormSuggestion();
+    }, 200)
   }
 };
 </script>
@@ -108,67 +178,6 @@ export default {
   margin: auto;
 }
 
-.resultItems {
-  position: relative;
-}
-
-.resultItems::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 100px;
-  background: -webkit-linear-gradient(
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 1) 100%
-  );
-  background-image: -moz-linear-gradient(
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 1) 100%
-  );
-  background-image: -o-linear-gradient(
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 1) 100%
-  );
-  background-image: linear-gradient(
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 1) 100%
-  );
-  background-image: -ms-linear-gradient(
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 1) 100%
-  );
-}
-
-.resultItems::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100px;
-  background: -webkit-linear-gradient(
-    rgba(255, 255, 255, 1) 0%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  background-image: -moz-linear-gradient(
-    rgba(255, 255, 255, 1) 0%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  background-image: -o-linear-gradient(
-    rgba(255, 255, 255, 1) 0%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  background-image: linear-gradient(
-    rgba(255, 255, 255, 1) 0%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  background-image: -ms-linear-gradient(
-    rgba(255, 255, 255, 1) 100%,
-    rgba(255, 255, 255, 0) 0%
-  );
-}
 
 .searchSite {
   position: absolute;
@@ -186,6 +195,21 @@ export default {
 }
 
 #results {
+}
 
+img {
+  max-width: 100%;
+  max-height: 100%;
+  display: block;
+  margin: auto auto;
+}
+.inner {
+  display: table-cell;
+  height: 100px;
+  width: 100%;
+  vertical-align: middle;
+}
+.gone {
+  display: none;
 }
 </style>

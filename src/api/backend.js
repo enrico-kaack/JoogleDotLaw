@@ -15,11 +15,13 @@ export default {
             })
     },
 
-    getResults(searchtext, norm) {
+    getResults(searchtext, norm, skip, limit) {
         return axios.get('/search/', {
             params: {
                 query: searchtext,
-                norm: norm
+                norm: norm,
+                skip: skip,
+                limit: limit
             }
         })
             .then(response => {
