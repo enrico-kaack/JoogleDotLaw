@@ -47,9 +47,9 @@ def provideNormAutocomplete(normEntered):
 def getNormText(norm):
     r = None
     if "BGB" in norm:
-        r = list(filter(lambda x: x.paragraph in norm, main.bgb))
+        r = list(filter(lambda x: x.paragraph + " " in norm, main.bgb))
     if "StGB" in norm:
-        r = list(filter(lambda x: x.paragraph in norm, main.stgb))
+        r = list(filter(lambda x: x.paragraph +" " in norm, main.stgb))
     return jsonify({"norm": r[0].__dict__})
 
 if __name__ == "__main__":
