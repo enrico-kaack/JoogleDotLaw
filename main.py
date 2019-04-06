@@ -8,6 +8,8 @@ from preprocess import run_complete_pipeline
 from nltk.stem.snowball import SnowballStemmer
 from flask import Flask
 from collections import defaultdict
+from nltk.metrics import edit_distance
+
 
 class Urteil:
     def __init__(self, dic, reload=False):
@@ -119,6 +121,8 @@ def setup(reloadUrteile=False):
     urteilListe = []
     bgb = []
     stgb = []
+    normIndex = []
+
     # read and save all urteile
     if not reloadUrteile:
         for filename in os.listdir("StR"):
@@ -134,19 +138,21 @@ def setup(reloadUrteile=False):
     with open("bgb.json") as bgb_file:
         d = json.load(bgb_file)
         for norm in d["normen"]:
-            if "sentencedtext" in norm and "artara" in norm:
-                n = Norm(d["artpara"], d["title"], d["sentencedtext"])
-                bgb.append(norm)
+            if "sentencedtext" in norm and "artpara" in norm and "title" in norm:
+                n = Norm(norm["artpara"], norm["title"], norm["sentencedtext"])
+                normIndex.append(n.paragraph + " BGB")
+                bgb.append(n)
     
     # read norms for stgb
     with open("stgb.json") as stgb_file:
         d = json.load(stgb_file)
         for norm in d["normen"]:
-            if "sentencedtext" in norm and "artara" in norm:
-                n = Norm(d["artpara"], d["title"], d["sentencedtext"])
-                stgb.append(norm)
+            if "sentencedtext" in norm and "artpara" in norm and "title" in norm:
+                n = Norm(norm["artpara"], norm["title"], norm["sentencedtext"])
+                normIndex.append(n.paragraph + " StGB")
+                stgb.append(n)
                 
-    return urteilListe, stgb, bgb
+    return urteilListe, stgb, bgb, normIndex
     
 def searchAndSort(searchstring, urteilListe, norm):
     stemmer = SnowballStemmer("german")
@@ -178,11 +184,19 @@ def getPageranks(urteilListe):
         return(pagerankdict)
             
 
+def autoCompleteNormFor(normStart):
+    r = []
+    for n in normIndex:
+        if normStart in n:
+            r.append(n)
+    return r[0:10]
+
+
 if __name__ == "__main__":
 
     reloadUrteile = True
     
-    urteilListe, stgb, bgb = setup(reloadUrteile)
+    urteilListe, stgb, bgb, normIndex = setup(reloadUrteile)
     
     print(getPageranks(urteilListe))
     
