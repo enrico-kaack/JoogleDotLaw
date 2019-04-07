@@ -54,4 +54,7 @@ def fitParametersLinear(X_train, y_train):
     
 def fitParametersLogistic(X_train, y_train):
     reg = LogisticRegression().fit(X_train, y_train)
-    return reg.coef_
+    return reg
+    
+def predictClass(X_pred, reg):
+    return reg.predict(X_pred)

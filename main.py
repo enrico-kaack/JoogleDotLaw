@@ -9,7 +9,7 @@ from nltk.stem.snowball import SnowballStemmer
 from flask import Flask
 from collections import defaultdict
 from nltk.metrics import edit_distance
-from regression import makeTrainingData, makeFeatures, fitParametersLinear, fitParametersLogistic
+from regression import makeTrainingData, makeFeatures, fitParametersLinear, fitParametersLogistic, predictClass
 
 
 
@@ -161,7 +161,7 @@ def setup(reloadUrteile=False):
                 
     return urteilListe, stgb, bgb, normIndex
     
-def searchAndSort(searchstring, urteilListe, norm, logCoefs):
+def searchAndSort(searchstring, urteilListe, norm, logreg):
     stemmer = SnowballStemmer("german")
     searchstring = stemmer.stem(searchstring)
     results = []
@@ -173,11 +173,12 @@ def searchAndSort(searchstring, urteilListe, norm, logCoefs):
                 absatz = Absatz(abs["num"], abs["text"], abs["textProcessed"])
                 if searchstring in absatz.textProcessed:
                     res = dict()
-                    ranking_res, features = Rankingnummer(absatz)
+                    ranking_res, features, predictedClass = Rankingnummer(absatz, True, logreg)
                     res["abs"] = absatz.num
                     res["ranking"] = ranking_res
                     res["urteil"] = urteil.__dict__
                     res["features"] = features
+                    res["class"] = predictedClass
                     results.append(res)
                     featureList.append(features)
                     for a in urteil.absaetze:
@@ -237,6 +238,7 @@ if __name__ == "__main__":
     featureList = makeFeatures()
     assert(len(y)==len(featureList))
     #print(fitParametersLinear(featureList, y))
-    logCoefs = fitParametersLogistic(featureList, y)
+    logreg = fitParametersLogistic(featureList, y)
+    searchAndSort("beendet", urteilListe, "§ 24 StGB", logreg)
     
 
