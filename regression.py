@@ -1,4 +1,4 @@
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LinearRegression, LogisticRegression
 import numpy as np
 import os
 import random
@@ -48,6 +48,10 @@ def makeFeatures():
                 
     
     
-def fitParameters(X_train, y_train):
+def fitParametersLinear(X_train, y_train):
     reg = LinearRegression().fit(X_train, y_train)
+    return reg.coef_
+    
+def fitParametersLogistic(X_train, y_train):
+    reg = LogisticRegression().fit(X_train, y_train)
     return reg.coef_

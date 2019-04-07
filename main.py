@@ -9,7 +9,7 @@ from nltk.stem.snowball import SnowballStemmer
 from flask import Flask
 from collections import defaultdict
 from nltk.metrics import edit_distance
-from regression import makeTrainingData, makeFeatures, fitParameters
+from regression import makeTrainingData, makeFeatures, fitParametersLinear, fitParametersLogistic
 
 
 
@@ -161,7 +161,7 @@ def setup(reloadUrteile=False):
                 
     return urteilListe, stgb, bgb, normIndex
     
-def searchAndSort(searchstring, urteilListe, norm):
+def searchAndSort(searchstring, urteilListe, norm, logCoefs):
     stemmer = SnowballStemmer("german")
     searchstring = stemmer.stem(searchstring)
     results = []
@@ -236,5 +236,7 @@ if __name__ == "__main__":
     y = [4,3,3,1,1,2,1,4,3,3,1,1,1,1,3,2,1,1,3,1,1,1,1,1,4,4,3,2,4,3,1,1,1,2,1,3,3,1,1,2,1,2,4,2,4,1,1,1,4,2,2,1,2,1,1,2,2,1,1,1,2,2,1,1,2,2,2,4,4,1,4,4,1,3,1,1,1,1,1,1,1,2,1,2,3,1,1,4,4,1,1,1,1,4,2,1,1,1,1,2,2,1,2,3,1,3,1,3,1,4,1,1,4,3,1,1,4,1,1,4,4,1,1,1,1,3,1,1,2,4,4,2,1,1,1,2,4,4,2,1,2,1,3,2,1,1,2,1,1,1,1,1,1,1,4,1,4,1]
     featureList = makeFeatures()
     assert(len(y)==len(featureList))
-    print(fitParameters(featureList, y))
+    #print(fitParametersLinear(featureList, y))
+    logCoefs = fitParametersLogistic(featureList, y)
+    
 
