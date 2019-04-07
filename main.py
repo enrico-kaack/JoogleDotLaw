@@ -9,7 +9,7 @@ from nltk.stem.snowball import SnowballStemmer
 from flask import Flask
 from collections import defaultdict
 from nltk.metrics import edit_distance
-from regression import makeTrainingData
+#from regression import makeTrainingData
 
 
 class Urteil:
