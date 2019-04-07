@@ -46,7 +46,7 @@ export default {
       var elToScrollTo = document.getElementsByName("rd_" + this.$props.r.abs);
       console.log(elToScrollTo);
       this.$scrollTo(elToScrollTo[0], { offset: -60 });
-    }, 400);
+    }, 1000);
   },
   data() {
     return {

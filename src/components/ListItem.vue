@@ -1,20 +1,25 @@
 <template>
   <div>
-    <b-button
-      id="refButton"
-      v-on:click="navToUrteil"
-      variant="light"
-    >{{r.urteil.gertyp}} {{r.urteil.doktyp}} vom {{dateFormatted}} - Az. {{r.urteil.aktenzeichen}}</b-button>
+      <b-button
+        id="refButton"
+        v-on:click="navToUrteil"
+        variant="light"
+      >{{r.urteil.gertyp}} {{r.urteil.doktyp}} vom {{dateFormatted}} - Az. {{r.urteil.aktenzeichen}}</b-button>
     <div class="resultItem beforeItem afterItem">
       {{ textBefore }}
       <br v-if="textBefore !== ''">
       <br>
       <div v-html="textFormatted"></div>
-       {{ r.features.join("__") }}
       <br v-if="textBefore !== ''">
       <br>
       {{ textAfter }}
     </div>
+    <div class="feedback">
+      <b-button variant="outline-secondary" v-bind:pressed="pressed == 1" v-on:click="pressed = 1">Sehr schlecht</b-button>
+      <b-button variant="outline-secondary" v-bind:pressed="pressed == 2" v-on:click="pressed = 2">Schlecht</b-button>
+      <b-button variant="outline-secondary" v-bind:pressed="pressed == 3" v-on:click="pressed = 3">Gut</b-button>
+      <b-button variant="outline-secondary" v-bind:pressed="pressed == 4" v-on:click="pressed = 4">Sehr gut</b-button>
+      </div>
   </div>
 </template>
 
@@ -26,7 +31,8 @@ export default {
   props: ["r", "search"],
   data() {
     return {
-      msg: "Welcome to Your Vue.js App"
+      pressed: 0,
+      feedbackLabels: ["Schlecht", "Mittel", "Gut"]
     };
   },
   computed: {
@@ -156,6 +162,13 @@ export default {
     rgba(255, 255, 255, 1) 100%,
     rgba(255, 255, 255, 0) 0%
   );
+}
+.feedback {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  z-index: 1;
+  margin: 5px;
 }
 
 #refButton {

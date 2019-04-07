@@ -60,7 +60,7 @@ export default {
         this.$data.search.suchbegriff,
         this.$data.search.norm,
         0,
-        20
+        40
       ).then(data => {
         this.$data.results = data;
       });

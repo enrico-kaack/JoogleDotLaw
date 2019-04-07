@@ -8,6 +8,7 @@ import BootstrapVue from 'bootstrap-vue'
 import axios from 'axios'
 import VueBootstrapTypeahead from 'vue-bootstrap-typeahead'
 import VueScrollTo from 'vue-scrollto'
+import Vuetify from 'vuetify'
 
 axios.defaults.baseURL = 'http://localhost:5000'
 
@@ -21,6 +22,9 @@ Vue.component('vue-bootstrap-typeahead', VueBootstrapTypeahead)
 Vue.component('ListItem', ListItem)
 
 Vue.use(VueScrollTo)
+
+Vue.use(Vuetify)
+import 'vuetify/dist/vuetify.min.css'
 
 /* eslint-disable no-new */
 new Vue({
