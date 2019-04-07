@@ -9,7 +9,7 @@ from nltk.stem.snowball import SnowballStemmer
 from flask import Flask
 from collections import defaultdict
 from nltk.metrics import edit_distance
-from regression import makeTrainingData
+from regression import makeTrainingData, makeFeatures, fitParameters
 
 
 class Urteil:
@@ -165,6 +165,7 @@ def searchAndSort(searchstring, urteilListe, norm):
     searchstring = stemmer.stem(searchstring)
     results = []
     resultsForHumans = []
+    featureList = []
     for urteil in urteilListe:
         if norm in urteil.norm:
             for abs in urteil.absaetze:
@@ -177,6 +178,7 @@ def searchAndSort(searchstring, urteilListe, norm):
                     res["urteil"] = urteil.__dict__
                     res["features"] = features
                     results.append(res)
+                    featureList.append(features)
                     for a in urteil.absaetze:
                         if a["num"] == absatz.num:
                             resultsForHumans.append(a["text"])
@@ -229,4 +231,9 @@ if __name__ == "__main__":
         print(len(results))
         makeTrainingData(word, norm, results, resultsForHumans, min(len(results),30))
     """
+    
+    y = [4,3,3,1,1,2,1,4,3,3,1,1,1,1,3,2,1,1,3,1,1,1,1,1,4,4,3,2,4,3,1,1,1,2,1,3,3,1,1,2,1,2,4,2,4,1,1,1,4,2,2,1,2,1,1,2,2,1,1,1,2,2,1,1,2,2,2,4,4,1,4,4,1,3,1,1,1,1,1,1,1,2,1,2,3,1,1,4,4,1,1,1,1,4,2,1,1,1,1,2,2,1,2,3,1,3,1,3,1,4,1,1,4,3,1,1,4,1,1,4,4,1,1,1,1,3,1,1,2,4,4,2,1,1,1,2,4,4,2,1,2,1,3,2,1,1,2,1,1,1,1,1,1,1,4,1,4,1]
+    featureList = makeFeatures()
+    assert(len(y)==len(featureList))
+    print(fitParameters(featureList, y))
 
