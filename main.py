@@ -158,12 +158,13 @@ def setup(reloadUrteile=False):
                 n = Norm(norm["artpara"], norm["title"], norm["sentencedtext"])
                 normIndex.append(n.paragraph + " StGB")
                 stgb.append(n)
-
+    
     y = [4,3,3,1,1,2,1,4,3,3,1,1,1,1,3,2,1,1,3,1,1,1,1,1,4,4,3,2,4,3,1,1,1,2,1,3,3,1,1,2,1,2,4,2,4,1,1,1,4,2,2,1,2,1,1,2,2,1,1,1,2,2,1,1,2,2,2,4,4,1,4,4,1,3,1,1,1,1,1,1,1,2,1,2,3,1,1,4,4,1,1,1,1,4,2,1,1,1,1,2,2,1,2,3,1,3,1,3,1,4,1,1,4,3,1,1,4,1,1,4,4,1,1,1,1,3,1,1,2,4,4,2,1,1,1,2,4,4,2,1,2,1,3,2,1,1,2,1,1,1,1,1,1,1,4,1,4,1]
     featureList = makeFeatures()
     assert(len(y)==len(featureList))
     #print(fitParametersLinear(featureList, y))
     logreg = fitParametersLogistic(featureList, y)
+    
          
     return urteilListe, stgb, bgb, normIndex, logreg
     
@@ -179,12 +180,12 @@ def searchAndSort(searchstring, urteilListe, norm, logreg):
                 absatz = Absatz(abs["num"], abs["text"], abs["textProcessed"])
                 if searchstring in absatz.textProcessed:
                     res = dict()
-                    ranking_res, features, predictedClass = Rankingnummer(absatz, True, logreg)
+                    ranking_res, features, predictedClass = Rankingnummer(absatz, False, logreg)
                     res["abs"] = absatz.num
                     res["ranking"] = ranking_res
                     res["urteil"] = urteil.__dict__
                     res["features"] = features
-                    res["class"] = int(predictedClass[0])
+                    #res["class"] = int(predictedClass[0])
                     results.append(res)
                     featureList.append(features)
                     for a in urteil.absaetze:

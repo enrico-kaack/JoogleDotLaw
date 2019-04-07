@@ -114,7 +114,7 @@ def Rankingnummer(Absatzobjekt, use_logreg=False, reg=None):
         
     ############################################
     #Normalisierung an (true) / aus (false)
-    norm = True
+    norm = False
     ############################################
 
     predicted_class = None
@@ -157,16 +157,16 @@ def Rankingnummer(Absatzobjekt, use_logreg=False, reg=None):
         #OHNE NORMALISIERUNG
         ##############################################
         #Gewichtugnsfaktor für Schlagwort-Faktor
-        c=20.5968
+        c=0.0476
         #Gewichtungsfaktor für Zitate (alle 3 Kategorien)
         d=1
         #Gewichtungen für Kategorien:
         #Kategorie 1:
-        e = 0.045
+        e = 0.0288
         #Kategorie 2:
-        f =-0.3099
+        f =-0.3084
         #Kategorie 3:
-        g = 0.62478
+        g = 0.6573
         #############################################
     
         #Schlagwörter werden durch die Länge des Textes geteilt
