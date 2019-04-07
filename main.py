@@ -9,6 +9,7 @@ from nltk.stem.snowball import SnowballStemmer
 from flask import Flask
 from collections import defaultdict
 from nltk.metrics import edit_distance
+from regression import makeTrainingData
 
 
 class Urteil:
@@ -39,6 +40,7 @@ class Urteil:
             self.norm = []
             norm = dic["norm"].split(",")
             for n in norm:
+                n = re.sub("Abs \d ", "", n)
                 self.norm.append(n.strip())
             if (len(dic["entscheidungsgruende"]) > 0):
                 self.gruende = dic["entscheidungsgruende"]
@@ -55,7 +57,11 @@ class Urteil:
             self.regionAbk = dic["regionAbk"]
             self.regionLong = dic["regionLong"]
             self.titel = dic["titel"]
-            self.norm = dic["norm"]
+            self.norm = []
+            normen = dic["norm"]
+            for n in normen:
+                n = re.sub("Abs \d ", "", n)
+                self.norm.append(n.strip())
             self.absaetze = dic["absaetze"]
             
     def _findAbsaetze(self):
@@ -158,19 +164,25 @@ def searchAndSort(searchstring, urteilListe, norm):
     stemmer = SnowballStemmer("german")
     searchstring = stemmer.stem(searchstring)
     results = []
+    resultsForHumans = []
     for urteil in urteilListe:
         if norm in urteil.norm:
             for abs in urteil.absaetze:
                 absatz = Absatz(abs["num"], abs["text"], abs["textProcessed"])
                 if searchstring in absatz.textProcessed:
                     res = dict()
-                    ranking_res = Rankingnummer(absatz)
+                    ranking_res, features = Rankingnummer(absatz)
                     res["abs"] = absatz.num
                     res["ranking"] = ranking_res
                     res["urteil"] = urteil.__dict__
-                    results.append(res) 
-    results = sorted(results, key=lambda x: x["ranking"], reverse=True)
-    return(results)
+                    res["features"] = features
+                    results.append(res)
+                    for a in urteil.absaetze:
+                        if a["num"] == absatz.num:
+                            resultsForHumans.append(a["text"])
+    resultsSorted = sorted(results, key=lambda x: x["ranking"], reverse=True)
+    #return(results, resultsSorted, resultsForHumans)
+    return resultsSorted
 
 def getPageranks(urteilListe):
         pagerankPattern = "\d StR \d+/\d+"
@@ -206,6 +218,15 @@ if __name__ == "__main__":
         def start(searchstring, norm):
             return searchAndSort(searchstring, urteilListe, norm)
     '''
-    with open("result.txt", "w", encoding="utf-8") as outf:
-        outf.write(str(searchAndSort("Mittäterschaft", urteilListe, "§ 25 Abs 2 StGB")))
+    #with open("result.txt", "w", encoding="utf-8") as outf:
+        #outf.write(str(searchAndSort("Mittäterschaft", urteilListe, "§ 25 Abs 2 StGB")))
+    
+    """
+    trainExamples = [("Mittäter", "§ 25 StGB"), ("unmittelbar", "§ 22 StGB"), ("beendet", "§ 24 StGB"), ("Garant","§ 13 StGB"), ("Hilfeleistung", "§ 27 StGB"), ("bestimmen", "§ 26 StGB"), ("erforderlich", "§ 22 StGB"), ("Wegnahme", "§ 242 StGB"), ("Vermögensschaden", "§ 263 StGB"), ("Vermögensverfügung", "§ 263 StGB"), ("Gewalt", "§ 249 StGB")]
+        
+    for word, norm in trainExamples:
+        results, resultsSorted, resultsForHumans = searchAndSort(word, urteilListe, norm)
+        print(len(results))
+        makeTrainingData(word, norm, results, resultsForHumans, min(len(results),30))
+    """
 
