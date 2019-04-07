@@ -12,6 +12,7 @@ from nltk.metrics import edit_distance
 from regression import makeTrainingData, makeFeatures, fitParameters
 
 
+
 class Urteil:
     def __init__(self, dic, reload=False):
         self.doknr = dic["doknr"]
