@@ -45,7 +45,7 @@ export default {
     setTimeout(() => {
       var elToScrollTo = document.getElementsByName("rd_" + this.$props.r.abs);
       console.log(elToScrollTo);
-      this.$scrollTo(elToScrollTo[0]);
+      this.$scrollTo(elToScrollTo[0], { offset: -60 });
     }, 500);
   },
   data() {
@@ -60,8 +60,8 @@ export default {
     },
     textFormatted: function() {
       var text = this.$props.r.urteil.gruende;
-      text = text.replace(new RegExp(
-        this.$props.search.suchbegriff, 'g'),
+      text = text.replace(
+        new RegExp(this.$props.search.suchbegriff, "g"),
         "<spawn class='marked' style='background-color: rgb(249, 253, 10);'>" +
           this.$props.search.suchbegriff +
           "</spawn>"
