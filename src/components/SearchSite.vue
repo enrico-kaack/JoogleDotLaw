@@ -1,42 +1,6 @@
 <template>
   <div>
-    <div class="searchBoxCollapsed" v-if="showResults">
-      <b-container id="input-fields">
-        <b-row>
-          <b-col>
-            <div class="inner">
-              <img src="../assets/joogle_law_logo.png" width="100%">
-            </div>
-          </b-col>
-          <b-col>
-            <b-form-group label="Vorschrift">
-              <b-form-input id="input-norm" v-model="normInput"></b-form-input>
-            </b-form-group>
-          </b-col>
-          <b-col>
-            <b-form-group label="Suchbegriff">
-              <b-form-input
-                id="input-suchbegriff"
-                v-model="search.suchbegriff"
-                v-on:keyup.enter="loadResults"
-              ></b-form-input>
-            </b-form-group>
-          </b-col>
-        </b-row>
-      </b-container>
 
-      <div id="results" v-if="showResults">
-         <b-list-group>
-      <b-list-group-item
-        class="resultItems"
-        v-bind:key="r.key"
-        v-for="r in results"
-      >
-      <ListItem v-bind:r="r" v-bind:search="search"></ListItem>
-      </b-list-group-item>
-    </b-list-group>
-      </div>
-    </div>
 
     <div class="searchSite" v-bind:class="{gone: showResults}">
       <div class="searchBox">
@@ -72,7 +36,7 @@
                   v-model="search.normText"
                   @select.native="selectedText"
                   disabled
-                  rows="3"
+                  rows="8"
                 ></b-form-textarea>
               </b-form-group>
             </b-col>
@@ -131,14 +95,12 @@ export default {
     },
 
     loadResults() {
-      this.$data.showResults = true;
-      API.getResults(
-        this.$data.search.suchbegriff,
-        this.$data.normInput,
-        0,
-        10
-      ).then(data => {
-        this.$data.results = data;
+      this.$router.push({
+        name: 'SearchResult',
+        params: {
+          norm: this.$data.normInput,
+          searchTerm: this.$data.search.suchbegriff
+        }
       });
     },
 
@@ -165,14 +127,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.searchBoxCollapsed {
-  width: 55%;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  margin: auto;
-}
+
 
 
 .searchSite {
@@ -183,7 +138,7 @@ export default {
   bottom: 0;
   left: 0;
   width: 55%;
-  height: 400px;
+  height: 600px;
 }
 
 .goingTop {
@@ -193,18 +148,7 @@ export default {
 #results {
 }
 
-img {
-  max-width: 100%;
-  max-height: 100%;
-  display: block;
-  margin: auto auto;
-}
-.inner {
-  display: table-cell;
-  height: 100px;
-  width: 100%;
-  vertical-align: middle;
-}
+
 .gone {
   display: none;
 }

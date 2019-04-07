@@ -10,6 +10,7 @@
       <br v-if="textBefore !== ''">
       <br>
       <div v-html="textFormatted"></div>
+       {{ r.features.join("__") }}
       <br v-if="textBefore !== ''">
       <br>
       {{ textAfter }}
@@ -40,20 +41,13 @@ export default {
 
     textBefore: function() {
       var abs = this.abs - 1;
-      console.log(this.$props);
       if (abs < 1 || this.$props.r.urteil.absaetze[abs] === undefined) {
         return "\n";
       } else {
-        console.log(
-          "absätze",
-          this.$props.r.urteil.absaetze[abs],
-          this.$props.r.urteil.absaetze[abs].text
-        );
         var worte = this.$props.r.urteil.absaetze[abs].text.split(" ");
         if (worte.length > 4) {
           worte = worte.slice(worte.length - 4, worte.length);
         }
-        console.log(worte);
         return worte.join(" ");
       }
     },
@@ -77,16 +71,10 @@ export default {
       ) {
         return "";
       } else {
-        console.log(
-          "absätze",
-          this.$props.r.urteil.absaetze[abs],
-          this.$props.r.urteil.absaetze[abs].text
-        );
         var worte = this.$props.r.urteil.absaetze[abs].text.split(" ");
         if (worte.length > 4) {
           worte = worte.slice(0, 4);
         }
-        console.log(worte);
         return worte.join(" ") + "...";
       }
     }
