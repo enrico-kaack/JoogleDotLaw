@@ -9,7 +9,7 @@ CORS(app)
 def setup():
     print("setting up data ...")
     reloadUrteile = True
-    main.urteilListe, main.stgb, main.bgb, main.normIndex = main.setup(reloadUrteile)
+    main.urteilListe, main.stgb, main.bgb, main.normIndex, main.logreg = main.setup(reloadUrteile)
     print("setup done, serving web requests")
 
 @app.route('/search/', methods=['GET'])
@@ -22,7 +22,7 @@ def search():
     limit = request.args.get('limit', default = 10, type = int)
     skip = request.args.get('skip', default = 0, type = int) 
     print(len(main.urteilListe))
-    r = main.searchAndSort(query, main.urteilListe,  norm)
+    r = main.searchAndSort(query, main.urteilListe,  norm, main.logreg)
     print(skip, limit, len(r))
 
 
