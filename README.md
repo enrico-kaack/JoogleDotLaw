@@ -2,7 +2,7 @@
 
 The search engine for german lawyers and students of law.
 It allows everyone to search for definitions of norm terminology in decisions by the BGH. The search will rank the results based on indicators for the relevance to the lawyer.
-This tool was built for the LegalTech Hackathon at the University of Heidelberg, Germany on 5.4.-7.4.2019
+This tool was built for the LegalTech Hackathon at the University of Heidelberg, Germany on 5.4.-7.4.2019.
 
 ![screencast](https://raw.githubusercontent.com/enrico-kaack/LegalHackathon/master/screencast_low.gif)
 
@@ -41,9 +41,13 @@ to run the Flask server on the default port 5000
 
 ## Authors
 Bente Nittka
+
 Enrico Kaack
+
 Lukas Ballweg
+
 Moritz Winckler
+
 Tianyu Yuan
 
 
