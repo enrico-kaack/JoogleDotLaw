@@ -23,13 +23,17 @@ TODO: screencast
 ### Backend
 1. Extract urteile.zip to backend/urteil
 2. run pip install -r requirements.txt in backend/ to install all backend dependencies
+3. instal the stopword corpus by opening an interactive python shell ``python`` and run
+```import nltk
+nltk.download('stopwords')```
 3. run 
-python server.py
+```python server.py```
 to run the Flask server on the default port 5000
 
+
 ### Frontend
-1. run npm install in frontend/ to install all dev dependencies
-2. run npm run dev to run a local dev server with hot reloading to serve the website
+1. run `npm install` in frontend/ to install all dev dependencies
+2. run `npm run dev` to run a local dev server with hot reloading to serve the website
 
 
 ## Authors
