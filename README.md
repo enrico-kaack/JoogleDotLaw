@@ -4,15 +4,17 @@ The search engine for german lawyers and students of law.
 It allows everyone to search for definitions of norm terminology in decisions by the BGH. The search will rank the results based on indicators for the relevance to the lawyer.
 This tool was built for the LegalTech Hackathon at the University of Heidelberg, Germany on 5.4.-7.4.2019
 
-TODO: screencast
+![screencast](https://raw.githubusercontent.com/enrico-kaack/LegalHackathon/master/screencast_low.gif)
 
 ## Features
 - clean and simple interface
 - input suggestions
 - search results ranking based on a metric suitable for decision texts
 ## Technical description
+TBD
 
 ## Possible future work
+TBD
 
 ## Installation
 
@@ -25,8 +27,9 @@ TODO: screencast
 2. run pip install -r requirements.txt in backend/ to install all backend dependencies
 3. instal the stopword corpus by opening an interactive python shell ``python`` and run
 ```import nltk
-nltk.download('stopwords')```
-3. run 
+nltk.download('stopwords')
+```
+4. run 
 ```python server.py```
 to run the Flask server on the default port 5000
 
