@@ -26,7 +26,8 @@ TBD
 1. Extract urteile.zip to backend/urteil
 2. run pip install -r requirements.txt in backend/ to install all backend dependencies
 3. instal the stopword corpus by opening an interactive python shell ``python`` and run
-```import nltk
+```
+import nltk
 nltk.download('stopwords')
 ```
 4. run 
