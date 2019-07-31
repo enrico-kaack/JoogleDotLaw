@@ -4,7 +4,7 @@ import inspect
 import re
 from bs4 import BeautifulSoup
 from preprocess import run_complete_pipeline
-from Rankingalgorithmus import Rankingnummer
+from Rankingalgorithmus import Rankingnummer, createJointVector, createAbsatzVectors
 from nltk.stem.snowball import SnowballStemmer
 from flask import Flask
 from collections import defaultdict
@@ -86,9 +86,10 @@ class Urteil:
 
 
 class Absatz:
-    def __init__(self, num, text, textProcessed=None):
+    def __init__(self, num, text, vector, textProcessed=None):
         self.num = num
         self.text = text
+        self.vector = vector
         if textProcessed is None:
             self.textProcessed = run_complete_pipeline(text)
         else:
@@ -169,28 +170,37 @@ def setup(reloadUrteile=False):
     return urteilListe, stgb, bgb, normIndex, logreg
     
 def searchAndSort(searchstring, urteilListe, norm, logreg):
+    
+    createAbsatzVectors(urteilListe)
+    
     stemmer = SnowballStemmer("german")
     searchstring = stemmer.stem(searchstring)
+    matchingAbsaetze = []
     results = []
     resultsForHumans = []
     featureList = []
     for urteil in urteilListe:
         if norm in urteil.norm:
             for abs in urteil.absaetze:
-                absatz = Absatz(abs["num"], abs["text"], abs["textProcessed"])
+                absatz = Absatz(abs["num"], abs["text"],abs["vector"], abs["textProcessed"])
                 if searchstring in absatz.textProcessed:
-                    res = dict()
-                    ranking_res, features, predictedClass = Rankingnummer(absatz, False, logreg)
-                    res["abs"] = absatz.num
-                    res["ranking"] = ranking_res
-                    res["urteil"] = urteil.__dict__
-                    res["features"] = features
-                    #res["class"] = int(predictedClass[0])
-                    results.append(res)
-                    featureList.append(features)
+                    matchingAbsaetze.append(absatz)
                     for a in urteil.absaetze:
                         if a["num"] == absatz.num:
                             resultsForHumans.append(a["text"])
+    bedeutungsClusterVec = createJointVector(matchingAbsaetze)
+    for absatz in matchingAbsaetze:
+        res = dict()
+        ranking_res, features, predictedClass = Rankingnummer(absatz, bedeutungsClusterVec, False, logreg)
+        res["abs"] = absatz.num
+        res["ranking"] = ranking_res
+        res["urteil"] = urteil.__dict__
+        res["features"] = features
+        res["vector"] = absatz.vector
+        #res["class"] = int(predictedClass[0])
+        results.append(res)
+        featureList.append(features)
+
     resultsSorted = sorted(results, key=lambda x: x["ranking"], reverse=True)
     #return(results, resultsSorted, resultsForHumans)
     return resultsSorted
@@ -203,7 +213,7 @@ def getPageranks(urteilListe):
             for ref in references:
                 pagerankdict[ref] += 1
         return(pagerankdict)
-            
+
 
 def autoCompleteNormFor(normStart):
     r = []
@@ -241,6 +251,8 @@ if __name__ == "__main__":
         makeTrainingData(word, norm, results, resultsForHumans, min(len(results),30))
     """
     
-    searchAndSort("beendet", urteilListe, "§ 24 StGB", logreg)
+    
+    searchAndSort("unmittelbar", urteilListe, "§ 22 StGB", logreg)
+    
     
 

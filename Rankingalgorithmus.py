@@ -1,4 +1,6 @@
 import re
+from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.feature_extraction.text import CountVectorizer
 
 def einzelwortsuche(Liste, Schlagwort):
     Anzahl = 0
@@ -62,6 +64,17 @@ def woertersuche(Liste):
         Ergebnis += Schlagwortdict[key] * einzelwortsuche(Liste, key) 
     return Ergebnis
 
+def createJointVector(absaetze):
+    """
+    param: absaetze a list of absaetze
+    returns: a sparse vector
+    """
+    
+    result = absaetze[0].vector
+    for absatz in absaetze[1:]:
+        result += absatz.vector
+    return result
+    
 #Zählt die Anzahl der Zitate in einem gesamten Urteilstext
 def Klammerauswertung(Text):  
     position_auf = 0 #Position "("
@@ -109,7 +122,30 @@ def Klammerauswertung(Text):
     Result = [Kategorie1, Kategorie2, Kategorie3]
     return Result
 
-def Rankingnummer(Absatzobjekt, use_logreg=False, reg=None):
+def vectorSimilarity(absatz, clusterVec):
+    return cosine_similarity(absatz.vector, clusterVec )[0][0]
+    
+def createAbsatzVectors(urteilListe):
+    corpus = []
+    for urteil in urteilListe:
+        for absatz in urteil.absaetze:
+            corpus.append(" ".join(absatz["textProcessed"]))
+    vectorizer = CountVectorizer()
+    X = vectorizer.fit_transform(corpus)
+
+    i = 0
+    for urteil in urteilListe:
+        for absatz in urteil.absaetze:
+            absatz["vector"] = X[i]
+            i += 1
+            
+                    
+
+def Rankingnummer(Absatzobjekt, clusterVec=None, use_logreg=False, reg=None):
+
+    similarity = 0
+    if clusterVec is not None:
+        similarity = vectorSimilarity(Absatzobjekt, clusterVec) 
 
         
     ############################################
@@ -124,6 +160,8 @@ def Rankingnummer(Absatzobjekt, use_logreg=False, reg=None):
         ##############################################
         #Gewichtugnsfaktor für Schlagwort-Faktor
         c=20.5968
+        #Gewichtungsfaktor für Absatzähnlichkeit
+        s = 1 # müssen wir noch herausfinden
         #Gewichtungsfaktor für Zitate (alle 3 Kategorien)
         d=1
         #Gewichtungen für Kategorien:
@@ -149,15 +187,19 @@ def Rankingnummer(Absatzobjekt, use_logreg=False, reg=None):
         Auswertung_Zitate[0] = Auswertung_Zitate[0] * e * d
         Auswertung_Zitate[1] = Auswertung_Zitate[1] * f * d
         Auswertung_Zitate[2] = Auswertung_Zitate[2] * g * d
+        
+        Auswertung_Similarity = similarity * s
 
-        features = [Auswertung_Schlagwoerter] + Auswertung_Zitate
-        return (Auswertung_Schlagwoerter + sum(Auswertung_Zitate), features, predicted_class)
+        features = [Auswertung_Schlagwoerter] + Auswertung_Zitate + Auswertung_Similarity
+        return (Auswertung_Schlagwoerter + sum(Auswertung_Zitate) + Auswertung_Similarity, features, predicted_class)
     
     else:
         #OHNE NORMALISIERUNG
         ##############################################
         #Gewichtugnsfaktor für Schlagwort-Faktor
         c=0.0476
+        #Gewichtungsfaktor für Absatzähnlichkeit
+        s = 1 # müssen wir noch herausfinden
         #Gewichtungsfaktor für Zitate (alle 3 Kategorien)
         d=1
         #Gewichtungen für Kategorien:
@@ -181,9 +223,11 @@ def Rankingnummer(Absatzobjekt, use_logreg=False, reg=None):
         Auswertung_Zitate[0] = Auswertung_Zitate[0] * e * d
         Auswertung_Zitate[1] = Auswertung_Zitate[1] * f * d
         Auswertung_Zitate[2] = Auswertung_Zitate[2] * g * d
+        
+        Auswertung_Similarity = similarity * s
 
-        features = [Auswertung_Schlagwoerter] + Auswertung_Zitate
-        return (Auswertung_Schlagwoerter + sum(Auswertung_Zitate), features, predicted_class)
+        features = [Auswertung_Schlagwoerter] + Auswertung_Zitate + [Auswertung_Similarity]
+        return (Auswertung_Schlagwoerter + sum(Auswertung_Zitate) + Auswertung_Similarity, features, predicted_class)
 
 
 
