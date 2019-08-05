@@ -10,7 +10,7 @@ import VueBootstrapTypeahead from 'vue-bootstrap-typeahead'
 import VueScrollTo from 'vue-scrollto'
 import Vuetify from 'vuetify'
 
-axios.defaults.baseURL = 'http://localhost:5000'
+axios.defaults.baseURL = process.env.VUE_APP_ROOT_API
 
 Vue.config.productionTip = false
 
