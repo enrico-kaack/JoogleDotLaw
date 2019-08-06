@@ -6,8 +6,6 @@ RUN pip install -r requirements.txt
 
 RUN unzip urteile.zip 
 
-RUN ls
-
 RUN python setup.py
 
 EXPOSE 5000
