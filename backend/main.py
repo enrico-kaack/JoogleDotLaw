@@ -199,7 +199,7 @@ def searchAndSort(searchstring, urteilListe, norm, logreg):
         res["ranking"] = ranking_res
         res["urteil"] = urteil.__dict__
         res["features"] = features
-        res["vector"] = absatz.vector
+        #res["vector"] = absatz.vector.toarray().tolist()
         #res["class"] = int(predictedClass[0])
         results.append(res)
         featureList.append(features)

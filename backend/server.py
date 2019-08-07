@@ -21,9 +21,9 @@ def search():
         abort(400)
     limit = request.args.get('limit', default = 10, type = int)
     skip = request.args.get('skip', default = 0, type = int) 
-    print(len(main.urteilListe))
+
     r = main.searchAndSort(query, main.urteilListe,  norm, main.logreg)
-    print(skip, limit, len(r))
+
 
 
     if (skip > len(r)):
@@ -34,8 +34,10 @@ def search():
 
     r = r[skip:limit]
 
-
-    print(skip, limit)
+    #remove absaetze vectors to be json serialisable
+    for u in r:
+        for a in u["urteil"]["absaetze"]:
+            a["vector"] = ""
 
     return jsonify(r)
 
