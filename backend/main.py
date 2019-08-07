@@ -3,6 +3,7 @@ import os
 import inspect
 import re
 from bs4 import BeautifulSoup
+from copy import deepcopy
 from preprocess import run_complete_pipeline
 from Rankingalgorithmus import Rankingnummer, createJointVector, createAbsatzVectors
 from nltk.stem.snowball import SnowballStemmer
@@ -86,10 +87,11 @@ class Urteil:
 
 
 class Absatz:
-    def __init__(self, num, text, vector, textProcessed=None):
+    def __init__(self, num, text, vector, textProcessed=None, normInUrteil=False):
         self.num = num
         self.text = text
         self.vector = vector
+        self.normInUrteil = normInUrteil
         if textProcessed is None:
             self.textProcessed = run_complete_pipeline(text)
         else:
@@ -166,12 +168,11 @@ def setup(reloadUrteile=False):
     #print(fitParametersLinear(featureList, y))
     logreg = fitParametersLogistic(featureList, y)
     
+    createAbsatzVectors(urteilListe)
          
     return urteilListe, stgb, bgb, normIndex, logreg
     
-def searchAndSort(searchstring, urteilListe, norm, logreg):
-    
-    createAbsatzVectors(urteilListe)
+def searchAndSort(searchstring, urteilListe, norm, logreg):    
     
     stemmer = SnowballStemmer("german")
     searchstring = stemmer.stem(searchstring)
@@ -180,14 +181,16 @@ def searchAndSort(searchstring, urteilListe, norm, logreg):
     resultsForHumans = []
     featureList = []
     for urteil in urteilListe:
+        normInUrteil = False
         if norm in urteil.norm:
-            for abs in urteil.absaetze:
-                absatz = Absatz(abs["num"], abs["text"],abs["vector"], abs["textProcessed"])
-                if searchstring in absatz.textProcessed:
-                    matchingAbsaetze.append(absatz)
-                    for a in urteil.absaetze:
-                        if a["num"] == absatz.num:
-                            resultsForHumans.append(a["text"])
+            normInUrteil = True
+        for abs in urteil.absaetze:
+            absatz = Absatz(abs["num"], abs["text"],abs["vector"], abs["textProcessed"], normInUrteil)
+            if searchstring in absatz.textProcessed:
+                matchingAbsaetze.append(absatz)
+                for a in urteil.absaetze:
+                    if a["num"] == absatz.num:
+                        resultsForHumans.append(a["text"])
     bedeutungsClusterVec = createJointVector(matchingAbsaetze)
     for absatz in matchingAbsaetze:
         res = dict()
@@ -252,7 +255,7 @@ if __name__ == "__main__":
     """
     
     
-    searchAndSort("unmittelbar", urteilListe, "§ 22 StGB", logreg)
+    searchAndSort("beendet", urteilListe, "§ 22 StGB", logreg)
     
     
 

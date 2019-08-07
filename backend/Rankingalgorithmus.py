@@ -69,7 +69,8 @@ def createJointVector(absaetze):
     param: absaetze a list of absaetze
     returns: a sparse vector
     """
-    
+    if absaetze == []:
+        return None
     result = absaetze[0].vector
     for absatz in absaetze[1:]:
         result += absatz.vector
@@ -158,10 +159,12 @@ def Rankingnummer(Absatzobjekt, clusterVec=None, use_logreg=False, reg=None):
     if norm:
         #MIT NORMALISIERUNG
         ##############################################
+        #Gewichtungsfaktor für Absatzähnlichkeit
+        s = 1 
+        #Gewichtungsfaktor für getaggte Norm
+        n = 0.5 
         #Gewichtugnsfaktor für Schlagwort-Faktor
         c=20.5968
-        #Gewichtungsfaktor für Absatzähnlichkeit
-        s = 1 # müssen wir noch herausfinden
         #Gewichtungsfaktor für Zitate (alle 3 Kategorien)
         d=1
         #Gewichtungen für Kategorien:
@@ -188,18 +191,20 @@ def Rankingnummer(Absatzobjekt, clusterVec=None, use_logreg=False, reg=None):
         Auswertung_Zitate[1] = Auswertung_Zitate[1] * f * d
         Auswertung_Zitate[2] = Auswertung_Zitate[2] * g * d
         
-        Auswertung_Similarity = similarity * s
+        Begriffsranking = similarity * s + Absatzobjekt.normInUrteil * n
 
-        features = [Auswertung_Schlagwoerter] + Auswertung_Zitate + Auswertung_Similarity
-        return (Auswertung_Schlagwoerter + sum(Auswertung_Zitate) + Auswertung_Similarity, features, predicted_class)
+        features = [Auswertung_Schlagwoerter] + Auswertung_Zitate 
+        return (Auswertung_Schlagwoerter + sum(Auswertung_Zitate) + Begriffsranking, features, predicted_class)
     
     else:
         #OHNE NORMALISIERUNG
         ##############################################
+        #Gewichtungsfaktor für Absatzähnlichkeit
+        s = 1 
+        #Gewichtungsfaktor für getaggte Norm
+        n = 0.5 
         #Gewichtugnsfaktor für Schlagwort-Faktor
         c=0.0476
-        #Gewichtungsfaktor für Absatzähnlichkeit
-        s = 1 # müssen wir noch herausfinden
         #Gewichtungsfaktor für Zitate (alle 3 Kategorien)
         d=1
         #Gewichtungen für Kategorien:
@@ -224,10 +229,10 @@ def Rankingnummer(Absatzobjekt, clusterVec=None, use_logreg=False, reg=None):
         Auswertung_Zitate[1] = Auswertung_Zitate[1] * f * d
         Auswertung_Zitate[2] = Auswertung_Zitate[2] * g * d
         
-        Auswertung_Similarity = similarity * s
+        Begriffsranking = similarity * s + Absatzobjekt.normInUrteil * n
 
-        features = [Auswertung_Schlagwoerter] + Auswertung_Zitate + [Auswertung_Similarity]
-        return (Auswertung_Schlagwoerter + sum(Auswertung_Zitate) + Auswertung_Similarity, features, predicted_class)
+        features = [Auswertung_Schlagwoerter] + Auswertung_Zitate
+        return (Auswertung_Schlagwoerter + sum(Auswertung_Zitate) + Begriffsranking, features, predicted_class)
 
 
 

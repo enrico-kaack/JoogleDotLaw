@@ -12,9 +12,11 @@ from preprocess import run_complete_pipeline
 #print(reg.coef_)
 
 class Absatz:
-    def __init__(self, num, text, textProcessed=None):
+    def __init__(self, num, text, vector=None, textProcessed=None, normInUrteil=False):
         self.num = num
         self.text = text
+        self.vector = vector
+        self.normInUrteil = normInUrteil
         if textProcessed is None:
             self.textProcessed = run_complete_pipeline(text)
         else:
