@@ -11,7 +11,13 @@ This tool was built for the LegalTech Hackathon at the University of Heidelberg,
 - input suggestions
 - search results ranking based on a metric suitable for decision texts
 ## Technical description
-TBD
+- input: relevant components of court decisions stored in json format
+- decision grounds (Entscheidungsgründe) is split into sections (Absätze) using beautiful soup to parse the html
+- text of each section is preprocessed by an NLP pipeline (tokenizing, stripping, removal of stopwords, stemming)
+- keyword search in the preprocessed text of each section
+- candidate sections are then passed to the ranking algorithm
+- ranking algorithm parameters have been estimated using linear regression
+- results are sorted based on their ranking values, so that section containing very relevant information for a jurist appear at the top of the list
 
 ## Possible future work
 TBD
