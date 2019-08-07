@@ -92,6 +92,7 @@ class Absatz:
         self.text = text
         self.vector = vector
         self.normInUrteil = normInUrteil
+        self.urteil = None
         if textProcessed is None:
             self.textProcessed = run_complete_pipeline(text)
         else:
@@ -186,6 +187,7 @@ def searchAndSort(searchstring, urteilListe, norm, logreg):
             normInUrteil = True
         for abs in urteil.absaetze:
             absatz = Absatz(abs["num"], abs["text"],abs["vector"], abs["textProcessed"], normInUrteil)
+            absatz.urteil = urteil
             if searchstring in absatz.textProcessed:
                 matchingAbsaetze.append(absatz)
                 for a in urteil.absaetze:
@@ -197,7 +199,7 @@ def searchAndSort(searchstring, urteilListe, norm, logreg):
         ranking_res, features, predictedClass = Rankingnummer(absatz, bedeutungsClusterVec, False, logreg)
         res["abs"] = absatz.num
         res["ranking"] = ranking_res
-        res["urteil"] = urteil.__dict__
+        res["urteil"] = absatz.urteil.__dict__
         res["features"] = features
         res["vector"] = absatz.vector
         #res["class"] = int(predictedClass[0])
@@ -243,7 +245,7 @@ if __name__ == "__main__":
             return searchAndSort(searchstring, urteilListe, norm)
     '''
     #with open("result.txt", "w", encoding="utf-8") as outf:
-        #outf.write(str(searchAndSort("Mittäterschaft", urteilListe, "§ 25 Abs 2 StGB")))
+        #outf.write(str(searchAndSort("erforderlich", urteilListe, "§ 22 StGB", logreg)))
     
     """
     trainExamples = [("Mittäter", "§ 25 StGB"), ("unmittelbar", "§ 22 StGB"), ("beendet", "§ 24 StGB"), ("Garant","§ 13 StGB"), ("Hilfeleistung", "§ 27 StGB"), ("bestimmen", "§ 26 StGB"), ("erforderlich", "§ 22 StGB"), ("Wegnahme", "§ 242 StGB"), ("Vermögensschaden", "§ 263 StGB"), ("Vermögensverfügung", "§ 263 StGB"), ("Gewalt", "§ 249 StGB")]
@@ -255,7 +257,8 @@ if __name__ == "__main__":
     """
     
     
-    searchAndSort("beendet", urteilListe, "§ 22 StGB", logreg)
+    for abs in searchAndSort("erforderlich", urteilListe, "§ 22 StGB", logreg):
+        print(abs["abs"],abs["urteil"]["aktenzeichen"])
     
     
 
