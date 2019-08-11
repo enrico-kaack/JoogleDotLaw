@@ -169,11 +169,12 @@ def setup(reloadUrteile=False):
     #print(fitParametersLinear(featureList, y))
     logreg = fitParametersLogistic(featureList, y)
     
-    createAbsatzVectors(urteilListe)
          
     return urteilListe, stgb, bgb, normIndex, logreg
     
 def searchAndSort(searchstring, urteilListe, norm, logreg):    
+
+    createAbsatzVectors(urteilListe)
     
     stemmer = SnowballStemmer("german")
     searchstring = stemmer.stem(searchstring)
@@ -257,7 +258,7 @@ if __name__ == "__main__":
     """
     
     
-    for abs in searchAndSort("erforderlich", urteilListe, "§ 22 StGB", logreg):
+    for abs in searchAndSort("unmittelbar", urteilListe, "§ 22 StGB", logreg):
         print(abs["abs"],abs["urteil"]["aktenzeichen"])
     
     
