@@ -9,7 +9,7 @@ CORS(app)
 def setup():
     print("setting up data ...")
     reloadUrteile = True
-    main.urteilListe, main.stgb, main.bgb, main.normIndex, main.logreg = main.setup(reloadUrteile)
+    main.urteilListe, main.stgb, main.bgb, main.normIndex, main.logreg, main.vectors = main.setup(reloadUrteile)
     print("setup done, serving web requests")
 
 @app.route('/search/', methods=['GET'])
@@ -22,7 +22,7 @@ def search():
     limit = request.args.get('limit', default = 10, type = int)
     skip = request.args.get('skip', default = 0, type = int) 
 
-    r = main.searchAndSort(query, main.urteilListe,  norm, main.logreg)
+    r = main.searchAndSort(query, main.urteilListe,  norm, main.logreg, main.vectors)
 
 
 
@@ -35,9 +35,9 @@ def search():
     r = r[skip:limit]
 
     #remove absaetze vectors to be json serialisable
-    for u in r:
-        for a in u["urteil"]["absaetze"]:
-            a["vector"] = ""
+    #for u in r:
+        #for a in u["urteil"]["absaetze"]:
+            #a["vector"] = ""
 
     return jsonify(r)
 

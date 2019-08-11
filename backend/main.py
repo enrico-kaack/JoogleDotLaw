@@ -169,12 +169,12 @@ def setup(reloadUrteile=False):
     #print(fitParametersLinear(featureList, y))
     logreg = fitParametersLogistic(featureList, y)
     
-         
-    return urteilListe, stgb, bgb, normIndex, logreg
+    vectors = createAbsatzVectors(urteilListe)
     
-def searchAndSort(searchstring, urteilListe, norm, logreg):    
-
-    createAbsatzVectors(urteilListe)
+         
+    return urteilListe, stgb, bgb, normIndex, logreg, vectors
+    
+def searchAndSort(searchstring, urteilListe, norm, logreg, vectors):    
     
     stemmer = SnowballStemmer("german")
     searchstring = stemmer.stem(searchstring)
@@ -187,7 +187,7 @@ def searchAndSort(searchstring, urteilListe, norm, logreg):
         if norm in urteil.norm:
             normInUrteil = True
         for abs in urteil.absaetze:
-            absatz = Absatz(abs["num"], abs["text"],abs["vector"], abs["textProcessed"], normInUrteil)
+            absatz = Absatz(abs["num"], abs["text"],vectors[abs["vectorid"]], abs["textProcessed"], normInUrteil)
             absatz.urteil = urteil
             if searchstring in absatz.textProcessed:
                 matchingAbsaetze.append(absatz)

@@ -134,11 +134,16 @@ def createAbsatzVectors(urteilListe):
     vectorizer = CountVectorizer()
     X = vectorizer.fit_transform(corpus)
 
+    vectors = dict()
     i = 0
     for urteil in urteilListe:
         for absatz in urteil.absaetze:
-            absatz["vector"] = X[i]
+            #absatz["vector"] = X[i]
+            absatz["vectorid"] = i
+            vectors[i] = X[i]
             i += 1
+            
+    return vectors
             
                     
 
