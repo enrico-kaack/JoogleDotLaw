@@ -167,7 +167,7 @@ def Rankingnummer(Absatzobjekt, clusterVec=None, use_logreg=False, reg=None):
         #Gewichtungsfaktor für Absatzähnlichkeit
         s = 1 
         #Gewichtungsfaktor für getaggte Norm
-        n = 0.5 
+        n = 2 
         #Gewichtugnsfaktor für Schlagwort-Faktor
         c=20.5968
         #Gewichtungsfaktor für Zitate (alle 3 Kategorien)
@@ -197,8 +197,10 @@ def Rankingnummer(Absatzobjekt, clusterVec=None, use_logreg=False, reg=None):
         Auswertung_Zitate[2] = Auswertung_Zitate[2] * g * d
         
         Begriffsranking = similarity * s + Absatzobjekt.normInUrteil * n
+        
 
         features = [Auswertung_Schlagwoerter] + Auswertung_Zitate 
+        print(features, similarity * s,Absatzobjekt.normInUrteil * n )
         return (Auswertung_Schlagwoerter + sum(Auswertung_Zitate) + Begriffsranking, features, predicted_class)
     
     else:
@@ -237,6 +239,7 @@ def Rankingnummer(Absatzobjekt, clusterVec=None, use_logreg=False, reg=None):
         Begriffsranking = similarity * s + Absatzobjekt.normInUrteil * n
 
         features = [Auswertung_Schlagwoerter] + Auswertung_Zitate
+        print(features, similarity * s,Absatzobjekt.normInUrteil * n )
         return (Auswertung_Schlagwoerter + sum(Auswertung_Zitate) + Begriffsranking, features, predicted_class)
 
 
